@@ -1,4 +1,4 @@
-# 0h Hackathon game
+# 0h Hackathon - Inwentaryzacja z foczką Hackerspace Trójmiasto
 
 ![Foczka Hackerspace Trójmiasto](./assets/foczka.jpg)
 
@@ -15,6 +15,9 @@ Wybierz jeden z trzech trybów gry i popraw posty:
 Foczka Hackerspace Trójmiasto będzie Ci wdzięczna! 💌
 
 ## Instrukcja
+
+Grę możesz uruchomić z załączonego pliku wykonywalnego `dist\foczka-hs3-0h-hackathon.exe`.
+Alternatywnie, uruchom skypt w Pythonie według poniższej instrukcji.
 
 ### Wymagania wstępne
 
@@ -43,9 +46,19 @@ python app.py
 1. Po poprawieniu z posta trzeba usunąć tag `fix-markdown`, `fix-place` lub `img-needed` - docelowo ma być to zautomatyzowane
 1. Wróć do gry i wygeneruj kolejny post do poprawy lub wróć do ekranu wyboru trybu gry
 
-![Foczka Hackerspace Trójmiasto](./assets/gra-inwentaryzacja.gif)
+![Foczka Hackerspace Trójmiasto](./docs/gra-inwentaryzacja.gif)
 
 ## Atrybucja
 
 - oryginalna grafika foczki "Ex Libris" - [hs3 library (!2)](https://github.com/hs3city/library/pull/2)
 - ikony - [iconmonstr](https://iconmonstr.com/)
+
+### Budowanie aplikacji (Windows)
+
+Zainstaluj PyInstaller
+
+```
+python -m pip install pyinstaller
+```
+
+Uruchom `build.bat`. Plik wykonywalny gry będzie w `dist\foczka-hs3-0h-hackathon.exe`.

@@ -2,7 +2,6 @@
 Class to fetch data from Discourse REST API
 '''
 import requests
-from dotenv import load_dotenv
 
 DISCOURSE_URL = "https://kb.hs3.pl" # Database is hosted here
 

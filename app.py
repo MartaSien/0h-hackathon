@@ -1,6 +1,7 @@
 import tkinter as tk
 from itertools import cycle
 from pathlib import Path
+import sys
 import webbrowser
 
 from PIL import Image, ImageTk
@@ -17,8 +18,14 @@ Wybierz tryb gry (co chcesz poprawić):
 
 BG_COLOR = "white"
 
+
+def resource_path(relative_path: str) -> Path:
+    bundle_dir = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
+    return bundle_dir / relative_path
+
+
 def display_header_img(parent, img_path: str):
-    with Image.open(Path(img_path)) as image:
+    with Image.open(resource_path(img_path)) as image:
         photo = ImageTk.PhotoImage(image)
     label = tk.Label(parent, image=photo, bg=BG_COLOR)
     label.image = photo
