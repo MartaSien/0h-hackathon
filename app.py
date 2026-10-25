@@ -5,15 +5,14 @@ import webbrowser
 
 from PIL import Image, ImageTk
 
-from discourse import DiscourseDatabase
+from discourse import DiscourseDatabase, DISCOURSE_URL
 
 INTRO_STR = """
 Foczka Hackerspace Trójmiasto znów potrzebuje Twojej pomocy!
 Znalazła wpisy w bazie zasobów Hackerspace Trójmiasto, którym
 brakuje kluczowych informacji.
 
-Uzupełnij znalezione przez foczkę wpisy o brakujące zdjęcia, miejsca
-i popraw błędy w formatowaniu Markdown.
+Wybierz tryb gry (co chcesz poprawić):
 """
 
 BG_COLOR = "white"
@@ -48,11 +47,12 @@ def get_button(parent, text: str, command):
         command=command
     )
 
-def initialize_game_mode(parent, db, tag: str):
+def initialize_game_mode(parent, db, tag: str, description: str, img_path: str):
     clear_parent(parent)
+    display_header_img(parent, img_path)
     paragraph = display_paragraph(
         parent,
-        "Foczka znalazła posty, którym brakuje zdjęć! Znajdź te zasoby, zrób im zdjęcie i uzupełnij te posty. 📸",
+        description,
     )
     img_posts = db.get_tag_data(tag)
     posts = img_posts["topic_list"]["topics"]
@@ -60,8 +60,8 @@ def initialize_game_mode(parent, db, tag: str):
     resource_frame.pack(fill="x", padx=20, pady=20)
     buttons = []
     for post in posts:
-        url = f'https://kb.hs3.pl/t/{post["id"]}'
-        button = get_button(resource_frame,post["fancy_title"], lambda url=url: webbrowser.open_new(url))
+        url = f'{DISCOURSE_URL}/t/{post["id"]}'
+        button = get_button(resource_frame,post["title"], lambda url=url: webbrowser.open_new(url))
         buttons.append(button)
     button_cycle = cycle(buttons)
     current_button = None
@@ -73,6 +73,11 @@ def initialize_game_mode(parent, db, tag: str):
         current_button = next(button_cycle)
         current_button.pack(fill="x")
     next_button = get_button(parent, "Pomagam dalej :)", show_next)
+    get_button(
+        parent,
+        "Kończymy, wracam do początku",
+        lambda: display_intro(parent, db),
+    ).pack()
     next_button.pack()
 
     if buttons:
@@ -81,10 +86,36 @@ def initialize_game_mode(parent, db, tag: str):
         paragraph.config(text="Wszystko gotowe, foczka jest szczęśliwa!")
         next_button.config(state=tk.DISABLED)
 
-def display_intro(parent):
+def display_intro(parent, db):
     clear_parent(parent)
     display_header_img(parent, "assets/foczka.jpg")
     display_paragraph(parent, INTRO_STR)
+    img_mode_intro = "Foczka znalazła posty, którym brakuje zdjęć! Znajdź te zasoby, zrób im zdjęcie i uzupełnij te posty. 📸"
+    place_mode_intro = "Czas zabawić się w detektywa. 🐾 Foczka znalazła posty, które mają nieprawidłowe lub brakujące miejsce. Znajdź gdzie dany przedmiot się ukrywa i uzupełnij je."
+    md_mode_intro = "Foczka znalazła posty, które mają błędy w formatowaniu Markdown. Pomóż jej proszę, płetwami ciężko wyklikuje się klawiaturę. :<"
+    get_button(
+        parent,
+        "chcę robić zdjęcia",
+        lambda: initialize_game_mode(
+            parent, db, "img-needed", img_mode_intro, "assets/foczka_img.jpg"
+        ),
+    ).pack()
+
+    get_button(
+        parent,
+        "chcę szukać zasobów",
+        lambda: initialize_game_mode(
+            parent, db, "fix-place", place_mode_intro, "assets/foczka_place.jpg"
+        ),
+    ).pack()
+
+    get_button(
+        parent,
+        "chcę naprawiać formatowanie",
+        lambda: initialize_game_mode(
+            parent, db, "fix-markdown", md_mode_intro, "assets/foczka_md.jpg"
+        ),
+    ).pack()
 
 
 if __name__ == "__main__":
@@ -93,14 +124,7 @@ if __name__ == "__main__":
     root.geometry("800x800+50+50")
     root.configure(bg=BG_COLOR)
 
-    display_intro(root)
-
     db = DiscourseDatabase()
+    display_intro(root, db)
 
-    get_button(
-        root,
-        "chcę robić zdjęcia",
-        lambda: initialize_game_mode(root, db, "img-needed"),
-    ).pack()
-    
     root.mainloop()
